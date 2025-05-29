@@ -1,4 +1,5 @@
 import java.io.*;
+import java.text.Normalizer;
 
 public class LeitorArquivo {
     private ArvoreBinariaBusca arvore;
@@ -6,7 +7,14 @@ public class LeitorArquivo {
 
     public LeitorArquivo(String[] palavrasChave) {
         this.arvore = new ArvoreBinariaBusca();
-        this.palavrasChave = palavrasChave;
+        this.palavrasChave = new String[palavrasChave.length];
+
+  
+        for (int i = 0; i < palavrasChave.length; i++) {
+            String normalizada = Normalizer.normalize(palavrasChave[i], Normalizer.Form.NFD);
+            normalizada = normalizada.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+            this.palavrasChave[i] = normalizada.toLowerCase();
+        }
     }
 
     public void lerArquivo(String caminhoArquivo) {
@@ -15,7 +23,11 @@ public class LeitorArquivo {
             int numeroLinha = 1;
 
             while ((linha = br.readLine()) != null) {
-                String[] palavras = linha.toLowerCase().replaceAll("[^a-z\\- ]", "").split("\\s+");
+                String linhaNormalizada = Normalizer.normalize(linha, Normalizer.Form.NFD);
+                linhaNormalizada = linhaNormalizada.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+                linhaNormalizada = linhaNormalizada.toLowerCase().replaceAll("[^a-z\\- ]", "");
+
+                String[] palavras = linhaNormalizada.split("\\s+");
 
                 for (String palavra : palavras) {
                     for (String chave : palavrasChave) {
@@ -31,6 +43,7 @@ public class LeitorArquivo {
                         }
                     }
                 }
+
                 numeroLinha++;
             }
 
