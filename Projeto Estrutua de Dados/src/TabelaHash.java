@@ -1,5 +1,5 @@
 public class TabelaHash {
-    private static final int TAMANHO = 26; // Uma posição para cada letra do alfabeto
+    private static final int TAMANHO = 26;
     private ArvoreBinariaBusca[] tabela;
 
     public TabelaHash() {
@@ -10,9 +10,8 @@ public class TabelaHash {
     }
 
 
-
     private int calcularIndice(String palavra) {
-        return Character.toLowerCase(palavra.charAt(0)) - 'a'; // Pega a posição da letra no alfabeto
+        return Character.toLowerCase(palavra.charAt(0)) - 'a';
     }
 
     public void inserir(Palavra palavra) {
