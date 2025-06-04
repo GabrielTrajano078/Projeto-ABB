@@ -1,19 +1,40 @@
 import java.io.*;
 import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class LeitorArquivo {
-    private ArvoreBinariaBusca arvore;
+    private TabelaHash tabelaHash;
     private String[] palavrasChave;
 
     public LeitorArquivo(String[] palavrasChave) {
-        this.arvore = new ArvoreBinariaBusca();
+        this.tabelaHash = new TabelaHash();
         this.palavrasChave = new String[palavrasChave.length];
 
-  
         for (int i = 0; i < palavrasChave.length; i++) {
             String normalizada = Normalizer.normalize(palavrasChave[i], Normalizer.Form.NFD);
             normalizada = normalizada.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
             this.palavrasChave[i] = normalizada.toLowerCase();
+        }
+    }
+
+    public static String[] lerPalavrasChaveDeArquivo(String caminho) {
+        try (BufferedReader br = new BufferedReader(new FileReader(caminho))) {
+            String linha;
+            List<String> lista = new ArrayList<>();
+
+            while ((linha = br.readLine()) != null) {
+                linha = Normalizer.normalize(linha, Normalizer.Form.NFD);
+                linha = linha.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+                lista.add(linha.toLowerCase());
+            }
+
+            return lista.toArray(new String[0]);
+
+        } catch (IOException e) {
+            System.err.println("Erro ao ler palavras-chave: " + e.getMessage());
+            return new String[0];
         }
     }
 
@@ -32,11 +53,11 @@ public class LeitorArquivo {
                 for (String palavra : palavras) {
                     for (String chave : palavrasChave) {
                         if (palavra.equals(chave)) {
-                            Palavra existente = arvore.busca(chave);
+                            Palavra existente = tabelaHash.buscar(chave);
                             if (existente == null) {
                                 Palavra nova = new Palavra(chave);
                                 nova.adicionarOcorrencia(numeroLinha);
-                                arvore.insere(nova);
+                                tabelaHash.inserir(nova);
                             } else {
                                 existente.adicionarOcorrencia(numeroLinha);
                             }
@@ -54,13 +75,16 @@ public class LeitorArquivo {
         }
     }
 
-    public void imprimirEmOrdem() {
-        arvore.imprimeEmOrdem();
+    public void imprimir() {
+        tabelaHash.imprimir();
     }
 
     public void exportar(String caminhoSaida) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminhoSaida))) {
-            exportaEmOrdem(arvore.getRaiz(), writer);
+            for (int i = 0; i < 26; i++) {
+                ArvoreBinariaBusca arvore = tabelaHash.getArvore(i);
+                exportaEmOrdem(arvore.getRaiz(), writer);
+            }
             System.out.println("Exportado para " + caminhoSaida);
         } catch (IOException e) {
             System.err.println("Erro ao exportar: " + e.getMessage());
