@@ -13,6 +13,11 @@ public class ArvoreBinariaBusca {
     }
 
     private Nodo raiz;
+
+    public boolean estaVazia() {
+        return raiz == null;
+    }
+
     private int nElementos;
 
     public ArvoreBinariaBusca() {
@@ -20,13 +25,7 @@ public class ArvoreBinariaBusca {
         this.nElementos = 0;
     }
 
-    public int tamanho() {
-        return this.nElementos;
-    }
 
-    public boolean estaVazia() {
-        return this.raiz == null;
-    }
 
     public void insere(Palavra nova) {
         this.raiz = insere(nova, this.raiz);
@@ -44,8 +43,6 @@ public class ArvoreBinariaBusca {
             nodo.esquerdo = insere(nova, nodo.esquerdo);
         } else if (comparacao > 0) {
             nodo.direito = insere(nova, nodo.direito);
-        } else {
-            // Palavra já existe: lógica de atualização deve estar fora
         }
 
         return nodo;
@@ -82,18 +79,6 @@ public class ArvoreBinariaBusca {
         emOrdem(nodo.direito);
     }
 
-    public int altura() {
-        return altura(this.raiz);
-    }
-
-    private int altura(Nodo nodo) {
-        if (nodo == null) return -1;
-
-        int esquerda = altura(nodo.esquerdo);
-        int direita = altura(nodo.direito);
-
-        return Math.max(esquerda, direita) + 1;
-    }
 
     public Nodo getRaiz() {
         return this.raiz;
